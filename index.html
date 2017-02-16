@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="styles/bootstrap.min.css">
     <style>
       .message { font-size: 1.3em; font-weight: bold; }
-      .green {color: green; }
-      .red {color: red; }
+      .green {color: green; border: 1px solid green; }
+      .red {color: red; border: 1px solid red; }
       .tip {opacity: 0.6; }
     </style>
     <script src="angular.min.js"></script>
@@ -27,8 +27,8 @@
              <span class="tip">", ," is considered as an empty item</span>
          </div>
          <div class="form-group message">
-           <span class="red">{{outputRed}}</span>
-           <span class="green">{{outputGreen}}</span>
+           <span ng-if="outputRed" class="red">{{outputRed}}</span>
+           <span ng-if="outputGreen" class="green">{{outputGreen}}</span>
          </div>
    </div>
 
