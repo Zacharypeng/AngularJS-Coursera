@@ -1,53 +1,97 @@
-(function() {
+(function(){
 'use strict';
 
-angular.module('LunchCheck', [])
-.controller('LunchCheckController', LunchCheckController);
+angular.module('Shopping List Check Off', [])
+.controller('ToBuyController', ToBuyController)
+.controller('AlreadyBoughtController', AlreadyBoughtController)
+.service('ShoppingListCheckOffService', ShoppingListCheckOffService)
 
-LunchCheckController.$inject = ['$scope'];
-function LunchCheckController($scope) {
-	$scope.outputRed = "";
-	$scope.outputGreen = "";
-	$scope.Lunch = "";
-	$scope.done = function() {
-		var items = new Array;
-		var cnt = new Array;
-		if($scope.Lunch != ""){
-			items = $scope.Lunch;
-			var k = 0;
-			
-			for(var i = 0; i < items.length; i++){
-				if(items[i] == ","){
-					cnt[k++] = i;
-				}
-			}
-			var s = 0;
-			for(var i = 0; i < cnt.length-1; i++){
-				if(cnt[i+1] - cnt[i] > 1){
-					s++;
-				}
-			}
-			if(items[items.length-1] == "," && (cnt[cnt.length-1]-cnt[cnt.length-2] > 1)){
-				s--;
-			}
+ToBuyController.$inject = ['ShoppingListCheckOffService', '$scope'];
+AlreadyBoughtController.$inject = ['ShoppingListCheckOffService', '$scope'];
 
-			if( s <= 1 && (k != items.length) ) {
-				 $scope.outputGreen = "Enjoy!" ;
-				 $scope.outputRed = "";
-			}else if(s > 1){
-				$scope.outputGreen = "Too much!" ;
-				$scope.outputRed = "";
-			}else{
-				$scope.outputRed = "Please enter some food!" ;
-				$scope.outputGreen = "";
-			}
-		}
-		else
-		{
-			$scope.outputRed = "Please enter data first" ;
-			$scope.outputGreen = "";		
+
+function ToBuyController(ShoppingListCheckOffService, $scope) {
+	var buyitem = this;
+	
+	// Pass items between the controllers 
+	buyitem.items = ShoppingListCheckOffService.showitem();
+	$scope.buyitem = buyitem.items;
+	$scope.buyitembottom = ShoppingListCheckOffService.passitem;
+	// Check if the to buy list is empty 
+	$scope.buyempty = ShoppingListCheckOffService.checkcntbuy;
+
+}
+
+
+function AlreadyBoughtController(ShoppingListCheckOffService, $scope) {
+	var boughtitem = this;
+	// Show the already bought items
+	boughtitem.items = ShoppingListCheckOffService.showboughtitem();
+	$scope.boughtitem = boughtitem.items;
+	// Check if the already bought list is empty
+	$scope.boughtempty = ShoppingListCheckOffService.checkcntbought;
+}
+
+function ShoppingListCheckOffService (){
+	var service = this;
+	var ToBuyList = [
+	{
+		name: "chicken",
+		quantity: "10"
+	},
+	{
+		name: "coffee",
+		quantity: "5"
+	},
+	{
+		name: "egg",
+		quantity: "70"
+	},
+	{
+		name: "sweet potato",
+		quantity: "20"
+	},
+	{
+		name: "broccoli",
+		quantity: "20"
+	}
+	];
+
+	var AlreadyBoughtList = [];
+	
+
+	service.showitem = function() {
+		return ToBuyList;
+	}
+
+	var cnt = 0;
+	service.passitem = function(index) {
+		AlreadyBoughtList[cnt] = ToBuyList[index];
+		cnt++;
+		ToBuyList.splice(index, 1);
+	}
+
+	service.showboughtitem = function() {
+		return AlreadyBoughtList;
+	}
+
+	service.checkcntbuy = function(){
+		if(cnt == 5){
+			return true;
 		}
 	}
-};
+
+	service.checkcntbought = function() {
+		if(cnt == 0){
+			return true;
+		}
+	}
+
+
+}
+
+
+
+
 
 })();
